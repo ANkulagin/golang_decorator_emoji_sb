@@ -1,1 +1,0 @@
-# golang_decorator_emoji_sb
