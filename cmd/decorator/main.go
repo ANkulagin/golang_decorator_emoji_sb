@@ -17,12 +17,6 @@ func main() {
 		log.Fatalf("Не удалось загрузить конфигурацию: %v", err)
 	}
 
-	// Преобразование относительных путей в абсолютные
-	//absSrcDir, err := filepath.Abs(cfg.SrcDir)
-	//if err != nil {
-	//	log.Fatalf("Не удалось определить абсолютный путь для исходной директории: %v", err)
-	//}
-
 	// Настройка уровня логирования
 	level, err := log.ParseLevel(cfg.LogLevel)
 	if err != nil {
@@ -48,9 +42,9 @@ func main() {
 
 	log.Infof("Уровень логирования: %s", cfg.LogLevel)
 
-	dec := decorator.NewDecorator(absSrcDir)
-	err = dec.DecorateDirectories()
-	if err != nil {
+	dec := decorator.NewDecorator(absSrcDir, cfg.ConcurrencyLimit)
+
+	if err := dec.Decorate(); err != nil {
 		log.Fatalf("Произошла ошибка при декорировании: %v", err)
 	}
 
