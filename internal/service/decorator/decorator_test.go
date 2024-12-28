@@ -1,7 +1,9 @@
 package decorator
 
-import "testing"
+import (
+	"testing"
+)
 
-func TestDecorateDirectories_Success(t *testing.T) {
+func TestDecorate_Success(t *testing.T) {
 
 }

@@ -1,2 +1,3 @@
 src_dir: "/home/ankul/obsidian"
 log_level: "info"
+concurrency_limit: 12
