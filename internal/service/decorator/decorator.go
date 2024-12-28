@@ -63,10 +63,6 @@ func (d *Decorator) decorateDirectory(rootPath, emojiPath string, wg *sync.WaitG
 		}
 	}
 
-	if dirEmoji == "" {
-		dirEmoji = rootPath
-	}
-
 	entries, err := os.ReadDir(rootPath)
 	if err != nil {
 		return fmt.Errorf("не удалось прочитать директорию: %s %v", rootPath, err.Error())
