@@ -78,7 +78,7 @@ func (d *Decorator) decorateDirectory(rootPath, emojiPath string, wg *sync.WaitG
 
 		if entry.IsDir() {
 			wg.Add(1)
-			go d.decorateDirConcurrently(oldPath, oldPath, wg, sem)
+			go d.decorateDirConcurrently(oldPath, dirEmoji, wg, sem)
 		} else {
 			err = addEmojiToFilename(oldName, emojiPath, rootPath, oldPath)
 			if err != nil {
@@ -124,6 +124,11 @@ func addEmojiToFilename(oldName, inheritedEmoji, path, oldPath string) error {
 			return fmt.Errorf("failed to rename file %s to %s: %w", oldPath, newPath, err)
 		}
 	}
+
+	log.WithFields(log.Fields{
+		"old_path": oldPath,
+		"new_path": newPath,
+	}).Info("Переименован файл")
 
 	return nil
 }
