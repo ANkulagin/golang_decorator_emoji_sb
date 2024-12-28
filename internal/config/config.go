@@ -7,8 +7,9 @@ import (
 )
 
 type Config struct {
-	SrcDir   string `yaml:"src_dir"`
-	LogLevel string `yaml:"log_level"`
+	SrcDir           string `yaml:"src_dir"`
+	LogLevel         string `yaml:"log_level"`
+	ConcurrencyLimit int    `yaml:"concurrency_limit"`
 }
 
 func LoadConfig(configPath string) (*Config, error) {

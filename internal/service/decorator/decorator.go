@@ -2,6 +2,7 @@ package decorator
 
 import (
 	"github.com/ANkulagin/golang_decorator_emoji_sb/internal/service/emoji"
+	"os"
 	"path/filepath"
 )
 
@@ -25,5 +26,10 @@ func (d *Decorator) DecorateDirectories() error {
 }
 
 func (d *Decorator) walkDirectories() error {
+	_, err := os.ReadDir(d.Path)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
