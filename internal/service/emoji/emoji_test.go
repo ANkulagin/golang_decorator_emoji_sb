@@ -31,6 +31,7 @@ func TestAddEmoji(t *testing.T) {
 		{"Folder 😀", "😀", "Folder 😀"},
 		{"File.md", "📄", "File.md 📄"},
 		{"File.md 📄", "📄", "File.md 📄"},
+		{"File.md", "🕰", "File.md 🕰"},
 	}
 
 	for _, tt := range tests {
