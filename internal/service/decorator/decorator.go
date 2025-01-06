@@ -49,6 +49,13 @@ func (d *Decorator) decorateDirConcurrently(rootPath, emojiPath string, wg *sync
 
 func (d *Decorator) decorateDirectory(rootPath, emojiPath string, wg *sync.WaitGroup, sem chan struct{}) error {
 	dirBase := filepath.Base(rootPath)
+
+	// Пропускать директории, начинающиеся на '.' или '_'
+	if strings.HasPrefix(dirBase, ".") || strings.HasPrefix(dirBase, "_") {
+		log.Infof("Пропуск директории: %s", rootPath)
+		return nil
+	}
+
 	dirEmoji := emoji.GetEmoji(dirBase)
 
 	if dirEmoji == "" && emojiPath != "" {
