@@ -83,7 +83,7 @@ func (d *Decorator) decorateDirectory(rootPath, emojiPath string, wg *sync.WaitG
 			wg.Add(1)
 			go d.decorateDirConcurrently(oldPath, dirEmoji, wg, sem)
 		} else {
-			err = addEmojiToFilename(oldName, emojiPath, rootPath, oldPath)
+			err = addEmojiToFilename(oldName, dirEmoji, rootPath, oldPath)
 			if err != nil {
 				return fmt.Errorf("%v", err)
 			}
