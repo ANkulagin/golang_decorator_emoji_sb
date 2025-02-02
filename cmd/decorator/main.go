@@ -42,7 +42,7 @@ func main() {
 
 	log.Infof("Уровень логирования: %s", cfg.LogLevel)
 
-	dec := decorator.NewDecorator(absSrcDir, cfg.ConcurrencyLimit)
+	dec := decorator.NewDecorator(absSrcDir, cfg.ConcurrencyLimit, cfg.SkipPatterns)
 
 	if err := dec.Decorate(); err != nil {
 		log.Fatalf("Произошла ошибка при декорировании: %v", err)

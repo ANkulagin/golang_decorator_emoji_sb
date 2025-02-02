@@ -1,3 +1,7 @@
 src_dir: "/Users/ankul/obsidian"
 log_level: "info"
 concurrency_limit: 12
+skip_patterns:
+  - "."
+  - "_"
+  - "any"

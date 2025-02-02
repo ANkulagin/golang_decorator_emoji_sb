@@ -13,12 +13,14 @@ import (
 type Decorator struct {
 	Path             string
 	ConcurrencyLimit int
+	skipPatterns     []string
 }
 
-func NewDecorator(path string, concurrencyLimit int) *Decorator {
+func NewDecorator(path string, concurrencyLimit int, skipPatterns []string) *Decorator {
 	return &Decorator{
 		Path:             path,
 		ConcurrencyLimit: concurrencyLimit,
+		skipPatterns:     skipPatterns,
 	}
 }
 
@@ -50,10 +52,12 @@ func (d *Decorator) decorateDirConcurrently(rootPath, emojiPath string, wg *sync
 func (d *Decorator) decorateDirectory(rootPath, emojiPath string, wg *sync.WaitGroup, sem chan struct{}) error {
 	dirBase := filepath.Base(rootPath)
 
-	// Пропускать директории, начинающиеся на '.' или '_'
-	if strings.HasPrefix(dirBase, ".") || strings.HasPrefix(dirBase, "_") {
-		log.Infof("Пропуск директории: %s", rootPath)
-		return nil
+	// Проходимся по всем паттернам из конфигурации
+	for _, pattern := range d.skipPatterns {
+		if strings.HasPrefix(dirBase, pattern) {
+			log.Infof("Skipping directory: %s, as it starts with the pattern '%s'", rootPath, pattern)
+			return nil
+		}
 	}
 
 	dirEmoji := emoji.GetEmoji(dirBase)
