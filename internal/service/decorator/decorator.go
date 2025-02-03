@@ -26,38 +26,38 @@ func NewDecorator(path string, concurrencyLimit int, skipPatterns []string) *Dec
 
 func (d *Decorator) Decorate() error {
 	emoji := emoji.GetEmoji(filepath.Base(d.Path))
+
 	wg := &sync.WaitGroup{}
 	sem := make(chan struct{}, d.ConcurrencyLimit)
+
 	wg.Add(1)
-
 	go d.decorateDirConcurrently(d.Path, emoji, wg, sem)
-
 	wg.Wait()
+
 	return nil
 }
 
 func (d *Decorator) decorateDirConcurrently(rootPath, emojiPath string, wg *sync.WaitGroup, sem chan struct{}) {
 	defer wg.Done()
+
 	sem <- struct{}{}
 	defer func() {
 		<-sem
 	}()
 
-	err := d.decorateDirectory(rootPath, emojiPath, wg, sem)
+	err := d.processDirectory(rootPath, emojiPath, wg, sem)
 	if err != nil {
 		log.WithError(err).Warnf("Ошибка при обработке директории: %s", rootPath)
 	}
 }
 
-func (d *Decorator) decorateDirectory(rootPath, emojiPath string, wg *sync.WaitGroup, sem chan struct{}) error {
+func (d *Decorator) processDirectory(rootPath, emojiPath string, wg *sync.WaitGroup, sem chan struct{}) error {
 	dirBase := filepath.Base(rootPath)
 
-	// Проходимся по всем паттернам из конфигурации
-	for _, pattern := range d.skipPatterns {
-		if strings.HasPrefix(dirBase, pattern) {
-			log.Infof("Skipping directory: %s, as it starts with the pattern '%s'", rootPath, pattern)
-			return nil
-		}
+	// Если имя директории начинается с одного из указанных префиксов, пропускаем её.
+	if d.shouldSkipDirectory(dirBase) {
+		log.Infof("Пропуск директории: %s (совпадает с шаблоном)", rootPath)
+		return nil
 	}
 
 	dirEmoji := emoji.GetEmoji(dirBase)
@@ -95,6 +95,16 @@ func (d *Decorator) decorateDirectory(rootPath, emojiPath string, wg *sync.WaitG
 	}
 
 	return nil
+}
+
+// shouldSkipDirectory возвращает true, если имя директории начинается с одного из указанных префиксов.
+func (d *Decorator) shouldSkipDirectory(directoryName string) bool {
+	for _, prefix := range d.skipPatterns {
+		if strings.HasPrefix(directoryName, prefix) {
+			return true
+		}
+	}
+	return false
 }
 
 func addEmojiToFilename(oldName, inheritedEmoji, path, oldPath string) error {

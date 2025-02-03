@@ -1,0 +1,107 @@
+flowchart TD
+%% Main Execution Flow
+    subgraph MAIN [Main Execution]
+        A[Start]:::start
+        B[Parse command-line flags]:::process
+        C[Load configuration via LoadConfig]:::process
+        D{Configuration loaded?}:::decision
+        E[Log fatal error and exit]:::error
+        F[Set logging level & format]:::process
+        G[Convert SrcDir to absolute path]:::process
+        H[Create Decorator instance via NewDecorator]:::process
+        I[Call func Decoratep func]:::process
+    end
+
+%% Decorator Process Flow
+    subgraph DECORATOR [Decorator Process]
+        J[Call func Emoji.GetEmoji]:::process
+        K[Initialize WaitGroup & Semaphore]:::process
+        L[Start decorateDirConcurrently]:::loop
+        M[Acquire semaphore]:::process
+        N[Call func processDirectory]:::process
+        O{shouldSkipDirectory?}:::decision
+        P[Log - Skipping directory]:::process
+        Q[Return from processDirectory]:::process
+        R[Determine effective directory emoji]:::process
+        S{Directory lacks emoji?}:::decision
+        T[Rename directory]:::process
+        U[Update rootPath & effective emoji]:::process
+        V[Read directory entries]:::process
+        W{Entry is a directory?}:::decision
+        X[Spawn decorateDirConcurrently for subdirectory]:::loop
+        Y[Call addEmojiToFilename for file]:::process
+    end
+
+%% File Processing Flow
+    subgraph FILE [File Processing: addEmojiToFilename]
+        Z[Check if file extension is .md]:::process
+        AA{Extension is .md?}:::decision
+        AB[Return `do nothing`]:::process
+        AC[Check if file already contains emoji]:::process
+        AD{File contains emoji?}:::decision
+        AE[Return `do nothing`]:::process
+        AF[Split filename into base and remainder]:::process
+        AG{Base lacks inherited emoji?}:::decision
+        AH[Construct new filename: base inheritedEmoji remainder]:::process
+        AI[Rename file from oldPath to newPath]:::process
+        AJ[Log - File renamed]:::process
+    end
+
+%% Легенда (Шпаргалка по цветам)
+    subgraph LEGEND [Info]
+        L1[Start - blue]:::start
+        L2[Process - green]:::process
+        L3[Decision - yellow]:::decision
+        L4[Loop - orange]:::loop
+        L5[Error - red]:::error
+    end
+
+%% Main Flow Connections
+    A --> B
+    B --> C
+    C --> D
+    D -- Yes --> F
+    D -- No --> E
+    F --> G
+    G --> H
+    H --> I
+
+%% Decorator Flow Connections
+    I --> J
+    J --> K
+    K --> L
+    L --> M
+    M --> N
+    N --> O
+    O -- Yes --> P
+    P --> Q
+    O -- No --> R
+    R --> S
+    S -- Yes --> T
+    T --> U
+    S -- No --> V
+    V --> W
+    U --> V
+    W -- Yes --> X
+    W -- No --> Y
+    Y --> Z
+
+%% File Processing Flow Connections
+    Z --> AA
+    AA -- Yes --> AC
+    AA -- No --> AB
+    AC --> AD
+    AD -- Yes --> AE
+    AD -- No --> AF
+    AF --> AG
+    AG -- Yes --> AH
+    AH --> AI
+    AI --> AJ
+
+
+%% Стиль блоков
+    classDef start fill:#cce5ff,stroke:#333,stroke-width:2px;
+    classDef process fill:#d4edda,stroke:#333,stroke-width:2px;
+    classDef decision fill:#fff3cd,stroke:#333,stroke-width:2px;
+    classDef loop fill:#ffcc99,stroke:#333,stroke-width:2px;
+    classDef error fill:#f8d7da,stroke:#333,stroke-width:2px;

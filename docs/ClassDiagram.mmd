@@ -1,0 +1,33 @@
+classDiagram
+    class Config {
+        +SrcDir : string
+        +LogLevel : string
+        +ConcurrencyLimit : int
+        +SkipPatterns : List[string]
+        +LoadConfig(configPath : string) : Config, error
+    }
+
+    class Decorator {
+        +Path : string
+        +ConcurrencyLimit : int
+        -skipPatterns : List[string]
+        +Decorate() : error
+        -decorateDirConcurrently()
+        -processDirectory() : error
+        -shouldSkipDirectory() : bool
+    }
+
+    class Emoji {
+        <<static>>
+        +GetEmoji(name : string) : string
+        +AddEmoji(name : string, emoji : string) : string
+        +ContainsEmoji(name : string) : bool
+    }
+
+    class Main {
+        +main()
+    }
+
+    Main --> Config : uses
+    Main --> Decorator : creates
+    Decorator --> Emoji : utilizes
