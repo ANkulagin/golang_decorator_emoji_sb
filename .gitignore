@@ -50,4 +50,4 @@ coverage.out
 go.sum
 
 # Untracked files
-
+coverage.html
